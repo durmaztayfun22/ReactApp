@@ -2,25 +2,27 @@ import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
 import Blog from './models/blog.js';// Modelin yolunu düzelttim
-
+import dotenv from 'dotenv'
 const app = express();
-
+dotenv.config();
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 const port = 5050;
 
-const dbURI = 'mongodb+srv://tayfunDurmaz:t1234@todoapp.pqvymtb.mongodb.net/todoApp?retryWrites=true&w=majority';
-
-mongoose.connect(dbURI, { useNewUrlParser: true, useUnifiedTopology: true })
-  .then((result) => {
-    console.log('Veritabanına bağlanıldı');
-  })
-  .catch((err) => {
-    console.log(err);
-  });
-
+const connectDatabase =async ()=> {
+  try {
+    const url = process.env.MONGO;
+    await mongoose.connect(url, {
+      useNewUrlParser: true, useUnifiedTopology: true,
+    });
+    console.log('connect to database')
+  } catch (error) {
+    console.log(error)
+  }
+}
+connectDatabase()
 app.get('/api/veri', async (req, res) => { 
   const veri = await Blog.find().sort({ createdAt: -1 })
   console.log(typeof(veri))
